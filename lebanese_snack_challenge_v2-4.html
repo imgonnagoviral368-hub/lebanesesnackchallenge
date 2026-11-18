@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10251e">
+<title>Lebanese Snack Rating Challenge</title>
+<style>
+:root{--bg:#0d1c17;--panel:#172c24;--panel2:#20392e;--cream:#fff4dc;--muted:#c3d1c6;--green:#8ed6a6;--gold:#ffd166}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -10%,#315641 0,#0d1c17 55%);color:var(--cream);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:22px}
+main{max-width:760px;margin:auto}.top{text-align:center;padding:18px 0 22px}.flag{font-size:30px}.eyebrow{color:var(--green);font-weight:800;letter-spacing:2px;font-size:12px;text-transform:uppercase;margin:8px 0}
+h1{font-size:clamp(30px,7vw,48px);line-height:1.05;margin:8px 0}.subtitle{color:var(--muted);margin:10px auto;max-width:500px}
+.card{background:linear-gradient(145deg,var(--panel),#13251e);border:1px solid #385544;border-radius:24px;padding:22px;box-shadow:0 18px 50px #0005}
+.progressline{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;font-weight:700;margin-bottom:9px}.track{height:8px;background:#31463a;border-radius:20px;overflow:hidden;margin-bottom:20px}.fill{height:100%;width:20%;background:var(--green);border-radius:20px;transition:width .25s}
+.food{height:185px;border-radius:18px;background:linear-gradient(135deg,#f4d8a2,#c58b4c);display:grid;place-items:center;position:relative;overflow:hidden}
+.food:before,.food:after{content:"";position:absolute;border:2px solid #fff8;border-radius:50%;width:210px;height:210px}
+.food:after{width:165px;height:165px}
+.foodemoji{font-size:100px;filter:drop-shadow(0 8px 5px #55351c55);z-index:1}
+.tag{display:inline-block;background:#294638;color:var(--green);padding:6px 11px;border-radius:30px;font-size:11px;font-weight:800;letter-spacing:1px;margin-top:19px}
+h2{font-size:29px;margin:8px 0 3px}.desc{color:var(--muted);margin:0 0 20px;font-size:14px}
+.question{font-weight:800;margin:20px 0 12px}.ratings{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.rate{border:1px solid #54705e;background:#20392e;color:var(--cream);border-radius:10px;padding:11px 0;font-weight:800;font-size:14px;cursor:pointer}
+.rate:hover,.rate.selected{background:var(--gold);border-color:var(--gold);color:#2a2415;transform:translateY(-2px)}
+.scale{display:flex;justify-content:space-between;color:#9eb1a3;font-size:11px;margin-top:7px}
+.actions{display:flex;gap:10px;margin-top:22px}.btn{border:0;border-radius:13px;padding:13px 18px;font-weight:800;font-size:14px;cursor:pointer}.primary{background:var(--green);color:#10251a;flex:1}.secondary{background:#294638;color:var(--cream)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.note{text-align:center;color:#9eb1a3;font-size:12px;margin:15px 0 0}
+.player-counter{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:9px 15px;border:1px solid #54705e;border-radius:999px;background:#20392e;color:var(--cream);font-size:13px;font-weight:800}.player-counter strong{color:var(--gold);font-size:17px;font-variant-numeric:tabular-nums}.counter-status{font-size:10px;color:var(--muted);font-weight:600}
+.result{text-align:center;display:none}.result .big{font-size:68px}.result h2{font-size:32px}.summary{display:grid;gap:8px;text-align:left;margin:20px 0}.summary div{display:flex;justify-content:space-between;background:#20392e;padding:11px 14px;border-radius:10px}
+footer{text-align:center;color:#9eb1a3;font-size:12px;margin:20px 0}
+@media(max-width:430px){body{padding:14px}.card{padding:16px}.ratings{gap:4px}.rate{padding:12px 0;font-size:12px}.food{height:155px}.foodemoji{font-size:82px}}
+body[dir="rtl"] .progressline, body[dir="rtl"] .scale {direction:rtl}
+body[dir="rtl"] .actions {direction:rtl}
+body[dir="rtl"] .summary div {direction:rtl}
+
+/* Version 2.0 additions */
+.mode-home{margin:0 auto 18px;max-width:760px}.mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mode-card{background:linear-gradient(145deg,#20392e,#172c24);border:1px solid #54705e;border-radius:18px;padding:17px;text-align:left;color:var(--cream);cursor:pointer;min-height:130px;transition:transform .15s,border-color .15s}.mode-card:hover{transform:translateY(-3px);border-color:var(--green)}.mode-card .mode-icon{font-size:30px}.mode-card strong{display:block;margin:8px 0 4px;font-size:16px}.mode-card small{display:block;color:var(--muted);line-height:1.4}.mode-heading{text-align:center;margin:12px 0 14px}.mode-heading h2{font-size:25px}.mode-screen{display:none}.mode-screen.active{display:block}.mode-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.mode-back{background:#294638;color:var(--cream);border:1px solid #54705e;border-radius:10px;padding:9px 13px;font-weight:800}.score-pill{background:#20392e;border:1px solid #54705e;border-radius:999px;padding:8px 12px;color:var(--gold);font-weight:800;font-size:13px}.question-panel{background:#20392e;border-radius:16px;padding:18px;margin:14px 0}.question-emoji{font-size:68px;text-align:center;margin:8px}.answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.answer-btn,.battle-btn{background:#294638;color:var(--cream);border:1px solid #54705e;border-radius:12px;padding:13px;font-weight:800;cursor:pointer}.answer-btn:hover,.battle-btn:hover{border-color:var(--gold)}.answer-btn:disabled{opacity:.7}.feedback{min-height:28px;text-align:center;font-weight:800;color:var(--green);margin:12px 0}.battle-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}.battle-btn{min-height:145px;font-size:17px}.battle-btn span{display:block;font-size:48px;margin-bottom:9px}.daily-date{text-align:center;color:var(--green);font-weight:800}.mode-actions{display:flex;gap:10px;margin-top:14px}.mode-actions button{flex:1}.best-line{text-align:center;color:var(--muted);font-size:13px;margin-top:12px}.home-intro{text-align:center;color:var(--muted);margin:0 auto 14px;max-width:540px}
+@media(max-width:430px){.mode-grid{grid-template-columns:1fr}.mode-card{min-height:unset}.battle-pair{gap:8px}.battle-btn{padding:10px;min-height:125px;font-size:14px}}
+
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+  <div class="flag">🇱🇧</div>
+  <div class="eyebrow" id="eyebrow">The Lebanese Snack Challenge</div>
+  <h1 id="headline">Rate These <span style="color:var(--green)">5 Snacks!</span></h1>
+  <p class="subtitle" id="intro">How delicious are Lebanon's favourites? Rate 8 Lebanese snacks from 1 to 10 and see your results.</p>
+  <div style="margin:18px auto 0;display:flex;align-items:center;justify-content:center;gap:10px">
+    <label for="language" id="languageLabel" style="font-size:14px;font-weight:700;color:var(--muted)">🌐 Language</label>
+    <select id="language" aria-label="Choose language" style="background:#20392e;color:#fff4dc;border:1px solid #54705e;border-radius:10px;padding:10px 14px;font:inherit;font-weight:700">
+      <option value="en">English</option>
+      <option value="ar">العربية</option>
+    </select>
+  </div>
+  <div class="player-counter" role="status" aria-live="polite"><span>👥</span><span id="counterLabel">Players played:</span><strong id="playerCount">—</strong><span class="counter-status" id="counterStatus">TOTAL</span></div>
+</header>
+
+<section class="mode-home" id="modeHome">
+  <div class="mode-heading"><div class="eyebrow" id="v2eyebrow">VERSION 2.0 · PICK YOUR GAME</div><h2 id="modeTitle">Choose a game mode</h2><p class="home-intro" id="modeIntro">Rate snacks, guess them, battle your favourites, or try today's challenge!</p></div>
+  <div class="mode-grid">
+    <button class="mode-card" data-mode="rating"><span class="mode-icon">⭐</span><strong id="modeRatingTitle">Snack Rating</strong><small id="modeRatingDesc">Rate the original 5 Lebanese snacks.</small></button>
+    <button class="mode-card" data-mode="guess"><span class="mode-icon">🧠</span><strong id="modeGuessTitle">Guess the Snack</strong><small id="modeGuessDesc">Identify Lebanese snacks from clues.</small></button>
+    <button class="mode-card" data-mode="battle"><span class="mode-icon">⚔️</span><strong id="modeBattleTitle">Snack Battle</strong><small id="modeBattleDesc">Pick your favourite in head-to-head battles.</small></button>
+    <button class="mode-card" data-mode="daily"><span class="mode-icon">📅</span><strong id="modeDailyTitle">Daily Challenge</strong><small id="modeDailyDesc">Try today's 5-question challenge.</small></button>
+  </div>
+  <div class="best-line"><span id="pointsLabel">Your points:</span> <strong id="pointsValue">0</strong> · <span id="bestLabel">Personal best:</span> <strong id="bestValue">0</strong></div>
+</section>
+<section class="card mode-screen" id="guessScreen">
+ <div class="mode-top"><button class="mode-back" data-home>← <span id="backHomeGuess">Home</span></button><span class="score-pill"><span id="scoreLabelGuess">Points</span>: <b id="guessScore">0</b></span></div>
+ <div class="progressline"><span id="guessProgress">QUESTION 1 OF 5</span><span>🧠</span></div><div class="question-panel"><div class="question-emoji" id="guessEmoji">🥯</div><h2 id="guessQuestion" style="text-align:center">Which snack is this?</h2><p id="guessHint" class="desc" style="text-align:center">A sesame bread ring often eaten on the go.</p></div>
+ <div class="answer-grid" id="guessAnswers"></div><div class="feedback" id="guessFeedback"></div><div class="mode-actions"><button class="btn primary" id="guessNext" disabled>Next question</button></div>
+</section>
+<section class="card mode-screen" id="battleScreen">
+ <div class="mode-top"><button class="mode-back" data-home>← <span id="backHomeBattle">Home</span></button><span class="score-pill"><span id="battleRoundLabel">Round</span>: <b id="battleRound">1/5</b> · <span id="battlePointsLabel">Points</span>: <b id="battlePoints">0</b></span></div>
+ <h2 id="battleTitle" style="text-align:center">Which snack wins?</h2><p class="home-intro" id="battleIntro">Choose the snack you would rather eat.</p><div class="battle-pair" id="battlePair"></div><div class="feedback" id="battleFeedback"></div>
+</section>
+<section class="card mode-screen" id="dailyScreen">
+ <div class="mode-top"><button class="mode-back" data-home>← <span id="backHomeDaily">Home</span></button><span class="score-pill"><span id="dailyScoreLabel">Points</span>: <b id="dailyScore">0</b></span></div>
+ <div class="daily-date" id="dailyDate"></div><div class="progressline"><span id="dailyProgress">QUESTION 1 OF 5</span><span>📅</span></div><div class="question-panel"><div class="question-emoji" id="dailyEmoji">🫓</div><h2 id="dailyQuestion" style="text-align:center">Which snack is traditionally topped with za'atar?</h2></div><div class="answer-grid" id="dailyAnswers"></div><div class="feedback" id="dailyFeedback"></div><div class="mode-actions"><button class="btn primary" id="dailyNext" disabled>Next question</button></div>
+</section>
+
+<section class="card" id="game" style="display:none">
+  <div id="play">
+    <div class="progressline"><span id="step">SNACK 1 OF 5</span><span id="progressText">20% COMPLETE</span></div>
+    <div class="track"><div class="fill" id="progress"></div></div>
+    <div class="food"><div class="foodemoji" id="emoji">🥯</div></div>
+    <div class="tag" id="category">LEBANESE CLASSIC</div>
+    <h2 id="name">Ka'ak</h2>
+    <p class="desc" id="desc">The famous sesame bread ring, perfect as a snack on the go.</p>
+    <div class="question">Your rating: <span id="chosenText" style="color:var(--gold)">Choose 1–10</span></div>
+    <div class="ratings" id="ratings"></div>
+    <div class="scale"><span>1 · Not for me</span><span>10 · Amazing!</span></div>
+    <div class="actions">
+      <button class="btn secondary" id="back" disabled>Back</button>
+      <button class="btn primary" id="next" disabled>Next snack →</button>
+    </div>
+    <p class="note">No wrong answers — it's your taste!</p>
+  </div>
+  <div class="result" id="result">
+    <div class="big">🏆</div>
+    <div class="eyebrow">Challenge completed</div>
+    <h2>Your Lebanese Snack Score</h2>
+    <p class="subtitle" id="average"></p>
+    <p class="score-pill" id="ratingPoints" style="display:inline-block"></p>
+    <div class="summary" id="summary"></div>
+    <button class="btn primary" id="again">Play again ↻</button>
+    <button class="btn secondary" id="share" style="margin-top:9px;width:100%">Share my results</button>
+    <p class="note" id="shareNote">Challenge your friends and compare ratings!</p>
+  </div>
+</section>
+<footer>Made for snack lovers 🇱🇧 · Your ratings stay on this device.</footer>
+</main>
+<script>
+const translations = {
+ en: {
+  eyebrow:"The Lebanese Snack Challenge", headline:'Rate These <span style="color:var(--green)">8 Lebanese Snacks!</span>',
+  intro:"How delicious are Lebanon's favourites? Rate 8 Lebanese snacks from 1 to 10 and see your results.",
+  language:"🌐 Language", step:"SNACK", of:"OF", complete:"COMPLETE", choose:"Choose 1–10",
+  rating:"Your rating:", notForMe:"1 · Not for me", amazing:"10 · Amazing!",
+  back:"Back", next:"Next snack →", results:"See my results →", noWrong:"No wrong answers — it's your taste!",
+  done:"Challenge completed", resultTitle:"Your Lebanese Snack Score",
+  average:"You gave these snacks an average of", share:"Share my results", again:"Play again ↻",
+  footer:"Made for snack lovers 🇱🇧 · Your ratings stay on this device.",
+  playersPlayed:"Players played:", counterTotal:"TOTAL", counterUnavailable:"Count unavailable",
+  shareNote:"Challenge your friends and compare ratings!", copied:"Results copied! Paste them in your post or message.",
+  screenshot:"You can screenshot your results and share them!", score:"My Lebanese Snack Challenge results!",
+  challenge:"Can you beat my score?",
+  snacks:[
+   ["Ka'ak","STREET-FOOD FAVORITE","The famous sesame bread ring, often enjoyed with a filling. A classic snack on the go."],
+   ["Man'oushe","BREAKFAST LEGEND","Warm Lebanese flatbread, often topped with za'atar, cheese, or both."],
+   ["Ma'amoul","SWEET CLASSIC","Delicate shortbread cookies traditionally filled with dates, pistachios, or walnuts."],
+   ["Knefeh","DESSERT STAR","A warm, sweet cheese pastry with a golden crunchy topping and syrup."],
+   ["Sfouf","LEBANESE SWEET","A soft yellow turmeric cake, often made with tahini and sometimes topped with pine nuts."],
+   ["Mankousheh with Cheese","CHEESY FAVOURITE","A warm flatbread topped with melted cheese."],
+   ["Barazek","CRUNCHY SWEET","Thin sesame and pistachio biscuits, crisp and sweet."],
+   ["Atayef","RAMADAN TREAT","Small pancakes filled with cream or nuts." ]
+  ]
+ },
+ ar: {
+  eyebrow:"تحدّي تقييم السناكات اللبنانية", headline:'قيّموا <span style="color:var(--green)">٨ سناكات لبنانية!</span>',
+  intro:"قدّيش بتحبّوا السناكات اللبنانية؟ قيّموا ٨ أنواع من ١ إلى ١٠ وشوفوا نتيجتكم!",
+  language:"🌐 اللغة", step:"السناك", of:"من", complete:"مكتمل", choose:"اختر من ١ إلى ١٠",
+  rating:"تقييمك:", notForMe:"١ · مش المفضّل عندي", amazing:"١٠ · رائع!",
+  back:"السابق", next:"السناك التالي ←", results:"شوف نتيجتي ←", noWrong:"ما في إجابة غلط — كل واحد وذوقه!",
+  done:"أنهيت التحدّي!", resultTitle:"نتيجتك في تحدّي السناكات اللبنانية",
+  average:"معدّل تقييماتك هو", share:"شارك نتيجتك", again:"العب مرة تانية ↻",
+  footer:"صُنع لمحبي السناكات 🇱🇧 · تقييماتك تبقى على جهازك.",
+  playersPlayed:"عدد مرات اللعب:", counterTotal:"الإجمالي", counterUnavailable:"العداد غير متاح",
+  shareNote:"تحدّى أصحابك وقارنوا التقييمات!", copied:"تم نسخ النتيجة! الصقها في منشورك أو رسالتك.",
+  screenshot:"يمكنك أخذ لقطة شاشة لنتيجتك ومشاركتها!", score:"نتائجي في تحدّي السناكات اللبنانية!",
+  challenge:"فيني شوف إذا بتقدر تتفوّق على نتيجتي؟",
+  snacks:[
+   ["كعك","من أشهر سناكات الشارع","كعكة السمسم اللبنانية الشهيرة، ويمكن تناولها مع حشوة لذيذة."],
+   ["منقوشة","أسطورة الفطور","عجينة لبنانية ساخنة مع الزعتر أو الجبنة أو الاثنين معاً."],
+   ["معمول","حلوى تقليدية","بسكويت هش ومحشو عادةً بالتمر أو الفستق الحلبي أو الجوز."],
+   ["كنافة","نجمة الحلويات","حلوى دافئة بالجبنة مع طبقة ذهبية مقرمشة وقطر."],
+   ["صفوف","حلوى لبنانية","كيكة صفراء طرية بالكركم، تُحضّر غالباً بالطحينة وقد تزيّن بالصنوبر."],
+   ["منقوشة بالجبنة","محبوبة الجبنة","عجينة ساخنة مغطاة بالجبنة الذائبة."],
+   ["برازق","حلوى مقرمشة","بسكويت رقيق بالسمسم والفستق الحلبي، مقرمش وحلو."],
+   ["قطايف","حلوى رمضانية","فطائر صغيرة محشوة بالقشطة أو المكسرات."]
+  ]
+ }
+};
+let lang="en";
+const snacks=[
+ {emoji:"🥯"},{emoji:"🫓"},{emoji:"🍪"},{emoji:"🧀"},{emoji:"🍰"},{emoji:"🫓"},{emoji:"🍘"},{emoji:"🥞"}
+];
+const totalSnacks=snacks.length;
+let index=0, scores=Array(totalSnacks).fill(null);
+const $=id=>document.getElementById(id);
+function render(){
+ const t=translations[lang], s=snacks[index], data=t.snacks[index];
+ document.documentElement.lang=lang;
+ document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+ $("eyebrow").textContent=t.eyebrow;
+ $("headline").innerHTML=t.headline;
+ $("intro").textContent=t.intro;
+ $("languageLabel").textContent=t.language;
+ $("step").textContent=`${t.step} ${lang==="ar"?["١","٢","٣","٤","٥","٦","٧","٨"][index]:index+1} ${t.of} ${lang==="ar"?"٨":"8"}`;
+ $("progressText").textContent=`${Math.round((index+1)/totalSnacks*100)}% ${t.complete}`;
+ $("progress").style.width=`${(index+1)/totalSnacks*100}%`;
+ $("emoji").textContent=s.emoji;$("name").textContent=data[0];$("category").textContent=data[1];$("desc").textContent=data[2];
+ $("chosenText").textContent=scores[index]===null?t.choose:`${scores[index]} / 10`;
+ $("ratings").innerHTML="";
+ for(let n=1;n<=10;n++){const b=document.createElement("button");b.className="rate"+(scores[index]===n?" selected":"");b.textContent=lang==="ar"?["٠","١","٢","٣","٤","٥","٦","٧","٨","٩","١٠"][n]:n;b.setAttribute("aria-label",`Rate ${n} out of 10`);b.onclick=()=>{scores[index]=n;render()};$("ratings").appendChild(b)}
+ $("back").textContent=t.back;$("back").disabled=index===0;
+ $("next").disabled=scores[index]===null;$("next").textContent=index===totalSnacks-1?t.results:t.next;
+ $("chosenText").parentElement.firstChild.textContent=t.rating+" ";
+ document.querySelector(".scale").children[0].textContent=t.notForMe;
+ document.querySelector(".scale").children[1].textContent=t.amazing;
+ $("back").disabled=index===0;
+ document.querySelector("#play .note").textContent=t.noWrong;
+ $("done");$("average");
+ $("again").textContent=t.again;$("share").textContent=t.share;
+ $("language").value=lang;
+}
+$("language").addEventListener("change",e=>{lang=e.target.value;render();if($("result").style.display==="block")showResult()});
+$("back").onclick=()=>{if(index>0){index--;render()}};
+$("next").onclick=()=>{if(index<totalSnacks-1){index++;render()}else showResult()};
+function showResult(){
+ const t=translations[lang];
+ const ratingPoints=scores.reduce((a,b)=>a+b,0);
+ localStorage.setItem("lebaneseSnackV2Last",String(ratingPoints));
+ const oldBest=Number(localStorage.getItem("lebaneseSnackV2Best")||0);
+ if(ratingPoints>oldBest)localStorage.setItem("lebaneseSnackV2Best",String(ratingPoints));
+ if($("pointsValue"))$("pointsValue").textContent=ratingPoints;
+ if($("bestValue"))$("bestValue").textContent=Math.max(ratingPoints,oldBest);
+ $("ratingPoints").textContent=(lang==="ar"?"النقاط التي ربحتها: ":"Points earned: ")+Math.round(ratingPoints/totalSnacks*5)+" / 50";
+ $("play").style.display="none";$("result").style.display="block";
+ $("result").dir=lang==="ar"?"rtl":"ltr";
+ $("result").querySelector(".eyebrow").textContent=t.done;
+ $("result").querySelector("h2").textContent=t.resultTitle;
+ const avg=scores.reduce((a,b)=>a+b,0)/totalSnacks;
+ $("average").textContent=`${t.average} ${avg.toFixed(1)} / 10!`;
+ $("summary").innerHTML=snacks.map((s,i)=>`<div><span>${s.emoji} ${t.snacks[i][0]}</span><strong>${scores[i]} / 10</strong></div>`).join("");
+ $("again").textContent=t.again;$("share").textContent=t.share;$("shareNote").textContent=t.shareNote;
+}
+$("again").onclick=()=>{index=0;scores=Array(totalSnacks).fill(null);$("result").style.display="none";$("play").style.display="block";render()};
+$("share").onclick=async()=>{
+ const t=translations[lang], avg=(scores.reduce((a,b)=>a+b,0)/totalSnacks).toFixed(1);
+ const msg=`🇱🇧 ${t.score}\n${snacks.map((s,i)=>`${t.snacks[i][0]}: ${scores[i]}/10`).join("\n")}\n${t.average}: ${avg}/10\n${t.challenge}`;
+ try{if(navigator.share)await navigator.share({title:t.resultTitle,text:msg});else{await navigator.clipboard.writeText(msg);$("shareNote").textContent=t.copied}}catch(e){$("shareNote").textContent=t.screenshot}
+};
+const counterRefresh=async()=>{try{const r=await fetch("/.netlify/functions/play-count",{cache:"no-store"});if(!r.ok)throw new Error();const d=await r.json();$("playerCount").textContent=Number(d.count).toLocaleString();$("counterLabel").textContent=translations[lang].playersPlayed;$("counterStatus").textContent=translations[lang].counterTotal}catch(e){$("playerCount").textContent="—";$("counterStatus").textContent=translations[lang].counterUnavailable}};
+async function recordCompletedPlay(){try{const r=await fetch("/.netlify/functions/play-count",{method:"POST"});if(!r.ok)throw new Error();const d=await r.json();$("playerCount").textContent=Number(d.count).toLocaleString()}catch(e){counterRefresh()}}
+const originalShowResult=showResult;let countedThisRound=false;showResult=function(){originalShowResult();if(!countedThisRound){countedThisRound=true;recordCompletedPlay()}};
+const originalAgain=$("again").onclick;$("again").onclick=()=>{countedThisRound=false;originalAgain()};
+render();counterRefresh();
+</script>
+
+<script>
+(()=>{
+ const $=id=>document.getElementById(id); let language='en', activeMode='home';
+ const snacks=[
+  {name:'Ka’ak',ar:'كعك',emoji:'🥯',hint:'A sesame bread ring, often eaten on the go.',hintAr:'كعكة دائرية بالسمسم، تؤكل غالباً أثناء التنقّل.'},
+  {name:'Man’oushe',ar:'منقوشة زعتر',emoji:'🫓',hint:'Lebanese flatbread often topped with za’atar.',hintAr:'عجينة لبنانية تُغطّى غالباً بالزعتر.'},
+  {name:'Ma’amoul',ar:'معمول',emoji:'🍪',hint:'A traditional filled cookie with dates or nuts.',hintAr:'حلوى تقليدية محشوة بالتمر أو المكسرات.'},
+  {name:'Knefeh',ar:'كنافة',emoji:'🧀',hint:'A warm cheese dessert with syrup and a crunchy top.',hintAr:'حلوى دافئة بالجبنة والقطر وطبقة مقرمشة.'},
+  {name:'Sfouf',ar:'صفوف',emoji:'🍰',hint:'A yellow turmeric cake, often made with tahini.',hintAr:'كيكة صفراء بالكركم وتُحضّر غالباً بالطحينة.'},
+  {name:'Cheese Man’oushe',ar:'منقوشة جبنة',emoji:'🫓',hint:'A warm flatbread topped with melted cheese.',hintAr:'عجينة ساخنة مغطاة بالجبنة الذائبة.'},
+  {name:'Barazek',ar:'برازق',emoji:'🍘',hint:'Crispy sesame biscuits often topped with pistachios.',hintAr:'بسكويت مقرمش بالسمسم والفستق الحلبي.'},
+  {name:'Atayef',ar:'قطايف',emoji:'🥞',hint:'Small pancakes filled with cream or nuts.',hintAr:'فطائر صغيرة محشوة بالقشطة أو المكسرات.'},
+  {name:'Sfiha',ar:'صفيحة',emoji:'🥟',hint:'A small open meat pie with a savoury topping.',hintAr:'فطيرة صغيرة مفتوحة مع حشوة لحم متبّلة.'},
+  {name:'Loukma',ar:'لقمة',emoji:'🍩',hint:'Small golden fried dough bites dipped in syrup.',hintAr:'كرات عجين صغيرة مقلية وذهبية ومغمّسة بالقطر.'}
+ ];
+ const dailyQuestions=[
+  {q:'Which snack is commonly topped with za’atar?',qa:'أي سناك يُغطّى عادةً بالزعتر؟',a:1},
+  {q:'Which treat is traditionally filled with dates or nuts?',qa:'أي حلوى تُحشى تقليدياً بالتمر أو المكسرات؟',a:2},
+  {q:'Which Lebanese sweet is served warm with syrup?',qa:'أي حلوى لبنانية تُقدّم دافئة مع القطر؟',a:3},
+  {q:'Which snack is a sesame bread ring?',qa:'أي سناك هو كعكة دائرية بالسمسم؟',a:0},
+  {q:'Which cake is known for its yellow turmeric colour?',qa:'أي كيكة تشتهر بلونها الأصفر بسبب الكركم؟',a:4},
+  {q:'Which snack is a sesame and pistachio biscuit?',qa:'أي حلوى هي بسكويت بالسمسم والفستق؟',a:6},
+  {q:'Which treat is a small filled pancake?',qa:'أي حلوى هي فطائر صغيرة محشوة؟',a:7},
+  {q:'Which savoury snack is a small open meat pie?',qa:'أي سناك مالح هو فطيرة لحم مفتوحة؟',a:8},
+  {q:'Which snack is made of small fried dough bites with syrup?',qa:'أي حلوى هي كرات عجين مقلية مع القطر؟',a:9},
+  {q:'Which flatbread is topped with melted cheese?',qa:'أي منقوشة تُغطّى بالجبنة الذائبة؟',a:5}
+ ];
+ const tr={en:{title:'Choose a game mode',intro:'Rate snacks, guess them, battle your favourites, or try today’s challenge!',rating:'Snack Rating',ratingD:'Rate the original 5 Lebanese snacks.',guess:'Guess the Snack',guessD:'Identify Lebanese snacks from clues.',battle:'Snack Battle',battleD:'Pick your favourite in head-to-head battles.',daily:'Daily Challenge',dailyD:'Try today’s 5-question challenge.',points:'Your points:',best:'Personal best:',home:'Home',pointsShort:'Points',battlePoints:'Points',question:'Which snack is this?',next:'Next question',finish:'See results',correct:'Correct! +10 points 🎉',wrong:'Not quite! The answer was ',pick:'Choose the snack you would rather eat.',wins:'Your winner is ',dailyDone:'Daily challenge complete! Your score: ',already:'You have already completed today’s challenge. Come back tomorrow!',round:'Round',battleDone:'Battle complete! Your favourite was ',dailyPrefix:'DAILY CHALLENGE · ',guessDone:'Guessing game complete! Score: ',of:'OF'},ar:{title:'اختر نمط اللعبة',intro:'قيّم السناكات، خمنها، اختَر المفضّل عندك أو جرّب تحدّي اليوم!',rating:'تقييم السناكات',ratingD:'قيّم ٥ سناكات لبنانية.',guess:'خمن السناك',guessD:'تعرّف على السناكات اللبنانية من التلميحات.',battle:'معركة السناكات',battleD:'اختَر السناك المفضّل في كل مواجهة.',daily:'تحدّي اليوم',dailyD:'جرّب تحدّي اليوم المؤلف من ٥ أسئلة.',points:'نقاطك:',best:'أفضل نتيجة:',home:'الرئيسية',pointsShort:'النقاط',battlePoints:'النقاط',question:'أي سناك هو؟',next:'السؤال التالي',finish:'عرض النتيجة',correct:'إجابة صحيحة! +١٠ نقاط 🎉',wrong:'مش تمام! الجواب هو ',pick:'اختَر السناك الذي تفضّل تناوله.',wins:'الفائز هو ',dailyDone:'انتهى تحدّي اليوم! نتيجتك: ',already:'أنهيت تحدّي اليوم. عُد غداً!',round:'الجولة',battleDone:'انتهت المعركة! المفضّل عندك هو ',dailyPrefix:'تحدّي اليوم · ',guessDone:'انتهت لعبة التخمين! نتيجتك: ',of:'من'}};
+ const t=()=>tr[language]; const snackName=i=>language==='ar'?snacks[i].ar:snacks[i].name;
+ let guessOrder=[0,1,2,3,4],guessAt=0,guessScore=0,guessAnswered=false,dailyAt=0,dailyScore=0,dailyAnswered=false,battleAt=0,battleWins=[],battleScore=0;
+ const bestKey='lebaneseSnackV2Best';
+ function updateStats(){const best=Number(localStorage.getItem(bestKey)||0);const current=Number(localStorage.getItem('lebaneseSnackV2Last')||0);$('pointsValue').textContent=current;$('bestValue').textContent=best;}
+ function saveScore(n){localStorage.setItem('lebaneseSnackV2Last',String(n));let best=Number(localStorage.getItem(bestKey)||0);if(n>best)localStorage.setItem(bestKey,String(n));updateStats();}
+ function show(which){activeMode=which;$('modeHome').style.display=which==='home'?'block':'none';$('game').style.display=which==='rating'?'block':'none';['guess','battle','daily'].forEach(x=>$(x+'Screen').classList.toggle('active',which===x));if(which==='rating'){$('game').scrollIntoView({behavior:'smooth',block:'start'});}else if(which!=='home')$(which+'Screen').scrollIntoView({behavior:'smooth',block:'start'});else{updateStats();window.scrollTo({top:0,behavior:'smooth'});}}
+ function updateLanguage(){const x=t();$('modeTitle').textContent=x.title;$('modeIntro').textContent=x.intro;$('modeRatingTitle').textContent=x.rating;$('modeRatingDesc').textContent=x.ratingD;$('modeGuessTitle').textContent=x.guess;$('modeGuessDesc').textContent=x.guessD;$('modeBattleTitle').textContent=x.battle;$('modeBattleDesc').textContent=x.battleD;$('modeDailyTitle').textContent=x.daily;$('modeDailyDesc').textContent=x.dailyD;$('pointsLabel').textContent=x.points;$('bestLabel').textContent=x.best;['Guess','Battle','Daily'].forEach(k=>$('backHome'+k).textContent=x.home);$('scoreLabelGuess').textContent=x.pointsShort;$('dailyScoreLabel').textContent=x.pointsShort;$('battlePointsLabel').textContent=x.battlePoints;$('battleTitle').textContent=x.battle;$('battleIntro').textContent=x.pick;updateStats();}
+ $('language').addEventListener('change',()=>{language=$('language').value;updateLanguage();if(activeMode==='guess')renderGuess();if(activeMode==='daily')renderDaily();if(activeMode==='battle')renderBattle();});
+ document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{const m=b.dataset.mode;show(m);if(m==='guess')startGuess();if(m==='battle')startBattle();if(m==='daily')startDaily();}));document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',()=>show('home')));
+ function shuffleDaily(){const d=new Date();const seed=Number(d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'));return dailyQuestions.map((q,i)=>({q,i,key:(seed*(i+7)*31)%997})).sort((a,b)=>a.key-b.key).slice(0,5).map(o=>o.i);}
+ function startGuess(){$('guessNext').onclick=nextGuess;guessOrder=Array.from({length:snacks.length},(_,i)=>i).sort(()=>Math.random()-.5).slice(0,5);guessAt=0;guessScore=0;guessAnswered=false;$('guessScore').textContent='0';renderGuess();}
+ function renderGuess(){const i=guessOrder[guessAt],s=snacks[i],x=t();$('guessProgress').textContent=`${x.guess} ${guessAt+1} ${x.of} 5`;$('guessEmoji').textContent='❓';$('guessQuestion').textContent=x.question;$('guessHint').textContent=language==='ar'?s.hintAr:s.hint;$('guessFeedback').textContent='';$('guessNext').disabled=true;$('guessNext').textContent=guessAt===4?x.finish:x.next;let opts=[i,...Array.from({length:snacks.length},(_,n)=>n).filter(n=>n!==i).sort((a,b)=>((a*13+guessAt*7)%17)-((b*13+guessAt*7)%17)).slice(0,3)];opts.sort((a,b)=>((a*11+guessAt*3)%13)-((b*11+guessAt*3)%13));$('guessAnswers').innerHTML='';opts.forEach(n=>{let b=document.createElement('button');b.className='answer-btn';b.textContent=snackName(n);b.onclick=()=>{if(guessAnswered)return;guessAnswered=true;const good=n===i;if(good){guessScore+=10;$('guessScore').textContent=guessScore;$('guessEmoji').textContent=s.emoji;$('guessFeedback').textContent=x.correct;}else{$('guessEmoji').textContent=s.emoji;$('guessFeedback').textContent=x.wrong+snackName(i);}document.querySelectorAll('#guessAnswers button').forEach(z=>z.disabled=true);$('guessNext').disabled=false;};$('guessAnswers').appendChild(b);});}
+ function nextGuess(){if(guessAt<4){guessAt++;guessAnswered=false;renderGuess();}else{saveScore(guessScore);$('guessQuestion').textContent=t().guessDone+guessScore+'/50';$('guessHint').textContent='🏆';$('guessAnswers').innerHTML='';$('guessFeedback').textContent=t().best+' '+Math.max(guessScore,Number(localStorage.getItem(bestKey)||0));$('guessNext').textContent=t().home;$('guessNext').disabled=false;$('guessNext').onclick=()=>show('home');}}
+ $('guessNext').onclick=nextGuess;
+ function startBattle(){battleAt=0;battleWins=[];battleScore=0;$('battlePoints').textContent='0';renderBattle();}
+ function renderBattle(){const x=t();$('battleRound').textContent=(battleAt+1)+'/5';$('battleFeedback').textContent='';$('battlePair').innerHTML='';let a=(battleAt*2)%snacks.length,b=(a+1+battleAt)%snacks.length;if(b===a)b=(b+1)%snacks.length;[a,b].forEach(n=>{let z=document.createElement('button');z.className='battle-btn';z.innerHTML=`<span>${snacks[n].emoji}</span>${snackName(n)}`;z.onclick=()=>{if(battleAt>=5)return;battleWins.push(n);battleScore+=10;$('battlePoints').textContent=battleScore;$('battleFeedback').textContent=x.wins+snackName(n)+'!';$('battlePair').querySelectorAll('button').forEach(q=>q.disabled=true);setTimeout(()=>{battleAt++;if(battleAt<5)renderBattle();else{saveScore(battleScore);let counts={};battleWins.forEach(k=>counts[k]=(counts[k]||0)+1);let winner=Number(Object.keys(counts).sort((u,v)=>counts[v]-counts[u])[0]);$('battlePair').innerHTML=`<div class="question-panel" style="grid-column:1/-1;text-align:center"><div class="question-emoji">${snacks[winner].emoji}</div><h2>${x.battleDone}${snackName(winner)}!</h2><button class="btn primary" id="battleHome">${x.home}</button></div>`;$('battleHome').onclick=()=>show('home');}} ,450);};$('battlePair').appendChild(z);});}
+ function startDaily(){ $('dailyNext').onclick=nextDaily;dailyAt=0;dailyScore=0;dailyAnswered=false;$('dailyScore').textContent='0';let today=new Date();let key='lebaneseSnackDaily-'+today.toISOString().slice(0,10);$('dailyDate').textContent=t().dailyPrefix+today.toLocaleDateString(language==='ar'?'ar-LB':'en-US',{weekday:'long',month:'long',day:'numeric'});if(localStorage.getItem(key)==='done'){$('dailyQuestion').textContent=t().already;$('dailyEmoji').textContent='🏆';$('dailyAnswers').innerHTML='';$('dailyFeedback').textContent='';$('dailyNext').disabled=true;return;}window.dailyKey=key;window.dailyOrder=shuffleDaily();renderDaily();}
+ function renderDaily(){const x=t(),q=dailyQuestions[window.dailyOrder[dailyAt]];$('dailyProgress').textContent=`${x.daily} ${dailyAt+1} ${x.of} 5`;$('dailyEmoji').textContent='❓';$('dailyQuestion').textContent=language==='ar'?q.qa:q.q;$('dailyFeedback').textContent='';$('dailyNext').disabled=true;$('dailyNext').textContent=dailyAt===4?x.finish:x.next;$('dailyAnswers').innerHTML='';Array.from({length:snacks.length},(_,i)=>i).filter(i=>i!==q.a).sort((a,b)=>((a*9+dailyAt*4)%23)-((b*9+dailyAt*4)%23)).slice(0,3).concat(q.a).forEach(n=>{let b=document.createElement('button');b.className='answer-btn';b.textContent=snackName(n);b.onclick=()=>{if(dailyAnswered)return;dailyAnswered=true;if(n===q.a){dailyScore+=10;$('dailyScore').textContent=dailyScore;$('dailyFeedback').textContent=x.correct;}else $('dailyFeedback').textContent=x.wrong+snackName(q.a);$('dailyEmoji').textContent=snacks[q.a].emoji;document.querySelectorAll('#dailyAnswers button').forEach(z=>z.disabled=true);$('dailyNext').disabled=false;};$('dailyAnswers').appendChild(b);});}
+ function nextDaily(){if(dailyAt<4){dailyAt++;dailyAnswered=false;renderDaily();}else{localStorage.setItem(window.dailyKey,'done');saveScore(dailyScore);$('dailyQuestion').textContent=t().dailyDone+dailyScore+'/50';$('dailyEmoji').textContent='🏆';$('dailyAnswers').innerHTML='';$('dailyFeedback').textContent=t().best+' '+Math.max(dailyScore,Number(localStorage.getItem(bestKey)||0));$('dailyNext').textContent=t().home;$('dailyNext').disabled=false;$('dailyNext').onclick=()=>show('home');}}
+ $('dailyNext').onclick=nextDaily;
+ updateLanguage();
+})();
+</script>
+
+</body>
+</html>
